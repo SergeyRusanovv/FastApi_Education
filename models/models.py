@@ -1,40 +1,40 @@
 from datetime import datetime
 
 from sqlalchemy import (
-    MetaData, Integer, TIMESTAMP, String,
-    ForeignKey, Column, JSON, Table
+    MetaData,
+    Integer,
+    TIMESTAMP,
+    String,
+    ForeignKey,
+    Column,
+    JSON,
+    Table,
+    Boolean,
 )
-from sqlalchemy.orm import declarative_base
 
 
 metadata = MetaData()
 
 
-roles = Table(
-    "roles",
+role = Table(
+    "role",
     metadata,
     Column("id", Integer, primary_key=True),
     Column("name", String(255), nullable=False),
-    Column("permissions", JSON)
+    Column("permissions", JSON),
 )
 
 
-users = Table(
-    "users",
+user = Table(
+    "user",
     metadata,
     Column("id", Integer, primary_key=True),
     Column("email", String(255), nullable=False),
     Column("username", String(255), nullable=False),
-    Column("password", String(255), nullable=False),
-    Column("role_id", Integer, ForeignKey("roles.id"), nullable=False),
-    Column("registered_at", TIMESTAMP, default=datetime.utcnow)
+    Column("registered_at", TIMESTAMP, default=datetime.utcnow),
+    Column("role_id", Integer, ForeignKey(role.c.id), nullable=False),
+    Column("hashed_password", String(255), nullable=False),
+    Column("is_active", Boolean, default=True, nullable=False),
+    Column("is_superuser", Boolean, default=False, nullable=False),
+    Column("is_verified", Boolean, default=False, nullable=False),
 )
-
-# class Users(Base):
-#     __tablename__ = 'users'
-#     id = Column(Integer, primary_key=True)
-#     email = Column(String, nullable=False, unique=True)
-#     username = Column(String, nullable=False)
-#     password = Column(String, nullable=False)
-#     registered_at = Column(TIMESTAMP, default=datetime.utcnow)
-#     role_id = Column(Integer, ForeignKey("roles.id"))
