@@ -5,18 +5,11 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import ValidationException
 from fastapi.responses import JSONResponse
 from typing import List, Dict, Union, Optional
-from fastapi_users import FastAPIUsers
 from pydantic import BaseModel, Field
-from auth.auth import auth_backend
-from auth.manager import get_user_manager
+from auth.base_config import auth_backend, fastapi_users
 from auth.schemas import UserRead, UserCreate
-from auth.database import User
 
 
-fastapi_users = FastAPIUsers[User, int](
-    get_user_manager,
-    [auth_backend],
-)
 app = FastAPI(title="My beautiful app")
 app.include_router(
     fastapi_users.get_auth_router(auth_backend),
@@ -136,4 +129,4 @@ def protected_route(user: User = Depends(current_user)):
 
 @app.get("/unprotected-route")
 def unprotected_route():
-    return f"Hello, anonym"
+    return "Hello, anonym"
