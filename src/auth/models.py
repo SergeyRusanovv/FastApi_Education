@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import (
     MetaData,
     Integer,
@@ -8,33 +8,37 @@ from sqlalchemy import (
     ForeignKey,
     Column,
     JSON,
-    Table,
     Boolean,
 )
-
+from sqlalchemy.orm import relationship
 
 metadata = MetaData()
+Base = declarative_base(metadata=metadata)
 
 
-role = Table(
-    "role",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("name", String(255), nullable=False),
-    Column("permissions", JSON),
-)
+class Role(Base):
+    """Таблица ролей"""
+
+    __tablename__ = "role"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), nullable=False)
+    permissions = Column(JSON)
+    users = relationship("User", back_populates="role")
 
 
-user = Table(
-    "user",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("email", String(255), nullable=False),
-    Column("username", String(255), nullable=False),
-    Column("registered_at", TIMESTAMP, default=datetime.utcnow),
-    Column("role_id", Integer, ForeignKey(role.c.id), nullable=False),
-    Column("hashed_password", String(255), nullable=False),
-    Column("is_active", Boolean, default=True, nullable=False),
-    Column("is_superuser", Boolean, default=False, nullable=False),
-    Column("is_verified", Boolean, default=False, nullable=False),
-)
+class User(Base):
+    """Таблица пользователей"""
+
+    __tablename__ = "user"
+
+    id = Column(Integer, primary_key=True)
+    email = Column(String(255), nullable=False)
+    username = Column(String(255), nullable=False)
+    registered_at = Column(TIMESTAMP, default=datetime.utcnow)
+    role_id = Column(Integer, ForeignKey(Role.id), nullable=False)
+    role = relationship(Role, back_populates="user")
+    hashed_password = Column(String(255), nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    is_superuser = Column(Boolean, default=False, nullable=False)
+    is_verified = Column(Boolean, default=False, nullable=False)
