@@ -8,9 +8,10 @@ from typing import List, Dict, Union, Optional
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from pydantic import BaseModel, Field
-from auth.base_config import auth_backend, fastapi_users
+from auth.base_config import auth_backend, fastapi_users, current_user
 from auth.schemas import UserRead, UserCreate
 from operations.router import router as router_operation
+from tasks.router import router as tasks_router
 from redis import asyncio as aioredis
 
 
@@ -29,6 +30,7 @@ app.include_router(
 )
 
 app.include_router(router_operation)
+app.include_router(tasks_router)
 
 
 @app.on_event("startup")
@@ -131,9 +133,6 @@ class Trade(BaseModel):
 async def add_trades(trades: List[Trade]):
     fake_traders.extend(trades)
     return {"status": 201, "info": "Done", "data": fake_traders}
-
-
-current_user = fastapi_users.current_user()
 
 
 @app.get("/protected-route")
