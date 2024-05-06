@@ -13,6 +13,7 @@ from auth.schemas import UserRead, UserCreate
 from operations.router import router as router_operation
 from tasks.router import router as tasks_router
 from redis import asyncio as aioredis
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI(title="My beautiful app")
@@ -33,6 +34,14 @@ app.include_router(router_operation)
 app.include_router(tasks_router)
 
 
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+
 @app.on_event("startup")
 async def startup():
     redis = aioredis.from_url("redis://127.0.0.1:6379")
@@ -45,6 +54,16 @@ async def validation_exception_handler(request: Request, exc: ValidationExceptio
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=jsonable_encoder({"detail": exc.errors()}),
     )
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+    allow_headers=["Content-Type", "Set-Cookie", "Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
+                   "Authorization"],
+)
 
 
 fake_users: List[Dict[str, Union[int, str]]] = [
