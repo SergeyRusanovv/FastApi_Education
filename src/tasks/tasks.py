@@ -1,10 +1,9 @@
 import smtplib
 from email.message import EmailMessage
 from celery import Celery
-from config import SMTP_USER, SMTP_PASSWORD
+from config import SMTP_USER, SMTP_PASSWORD, REDIS_HOST, REDIS_PORT
 
-
-celery = Celery("tasks", broker="redis://172.17.0.2:6379")
+celery = Celery("tasks", broker=f"redis://{REDIS_HOST}:{REDIS_PORT}")
 
 SMTP_HOST = "smtp.yandex.ru"
 SMTP_PORT = 465

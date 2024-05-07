@@ -137,3 +137,4 @@ dmypy.json
 
 # the rest
 .swp
+/.env_prod
