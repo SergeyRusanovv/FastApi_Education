@@ -7,7 +7,7 @@ Base = declarative_base(metadata=metadata)
 
 
 class Messages(Base):
-    __tablename__ = "messages"
+	__tablename__ = "messages"
 
-    id = Column(Integer, primary_key=True)
-    message = Column(String)
+	id = Column(Integer, primary_key=True)
+	message = Column(String)

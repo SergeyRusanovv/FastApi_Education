@@ -7,5 +7,5 @@ router = APIRouter(prefix="/report")
 
 @router.get("/dashboard")
 async def get_dashboard(user=Depends(current_user)):
-    send_email_report_dashboard.delay(user.username)
-    return {"status": 200, "data": "Письмо отправлено", "detail": None}
+	send_email_report_dashboard.delay(user.username)
+	return {"status": 200, "data": "Письмо отправлено", "detail": None}
