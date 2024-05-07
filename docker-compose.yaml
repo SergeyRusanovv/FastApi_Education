@@ -1,0 +1,55 @@
+version: "3.7"
+services:
+  db:
+    image: postgres:15
+    container_name: db
+    command: -p 1221
+    expose:
+      - 1221
+    env_file:
+      - .env_prod
+
+  redis-fastapi:
+    image: redis:7
+    container_name: redis-fastapi
+    command: --port 5370
+    expose:
+      - 5370
+
+  app:
+    build:
+      context: .
+    env_file:
+      - .env_prod
+    container_name: fastapi_app
+    command: ["docker_comm/app.sh"]
+    ports:
+      - 9999:8000
+    depends_on:
+      - db
+      - redis-fastapi
+
+  celery:
+    build:
+      context: .
+    env_file:
+      - .env_prod
+    container_name: celery
+    command: ["docker_comm/celery.sh", "celery"]
+    depends_on:
+      - redis-fastapi
+
+
+
+  flower:
+    build:
+      context: .
+    env_file:
+      - .env_prod
+    container_name: flower
+    command: ["docker_comm/celery.sh", "flower"]
+    depends_on:
+      - redis-fastapi
+      - celery
+    ports:
+      - 8888:5555

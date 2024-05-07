@@ -16,6 +16,7 @@ from auth.base_config import auth_backend, fastapi_users, current_user
 from auth.schemas import UserRead, UserCreate
 from redis import asyncio as aioredis
 
+from config import REDIS_HOST, REDIS_PORT
 from operations.router import router as router_operation
 from tasks.router import router as tasks_router
 from pages.router import router as pages_router
@@ -54,7 +55,7 @@ origins = [
 
 @app.on_event("startup")
 async def startup():
-    redis = aioredis.from_url("redis://127.0.0.1:6379")
+    redis = aioredis.from_url(f"redis://{REDIS_HOST}:{REDIS_PORT}", encoding="utf-8", decode_responses=True)
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
 
 
