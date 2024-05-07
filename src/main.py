@@ -1,21 +1,25 @@
-from datetime import datetime
-from enum import Enum
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Request, status, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import ValidationException
 from fastapi.responses import JSONResponse
-from typing import List, Dict, Union, Optional
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
+
 from pydantic import BaseModel, Field
+from datetime import datetime
+from enum import Enum
+from typing import List, Dict, Union, Optional
+
 from auth.base_config import auth_backend, fastapi_users, current_user
 from auth.schemas import UserRead, UserCreate
+from redis import asyncio as aioredis
+
 from operations.router import router as router_operation
 from tasks.router import router as tasks_router
 from pages.router import router as pages_router
-from redis import asyncio as aioredis
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from chat.router import router as chats_router
 
 
 app = FastAPI(title="My beautiful app")
@@ -37,6 +41,7 @@ app.include_router(
 app.include_router(router_operation)
 app.include_router(tasks_router)
 app.include_router(pages_router)
+app.include_router(chats_router)
 
 
 origins = [

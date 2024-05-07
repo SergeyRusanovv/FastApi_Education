@@ -1,9 +1,8 @@
 from typing import Optional
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, IntegerIDMixin, models, schemas, exceptions
-
 from auth.utils import get_user_db
-from database import User
+from auth.models import User
 
 
 SECRET = "SECRET"
